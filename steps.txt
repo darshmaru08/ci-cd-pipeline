@@ -1,0 +1,79 @@
+Create this project structure:
+
+my-static-site/
+│
+├── index.html
+└── .github/
+    └── workflows/
+        └── deploy.yml
+
+
+1. Create index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Actions CI/CD</title>
+</head>
+<body>
+  <h1>CI/CD Deployment Successful!</h1>
+  <p>This static page was deployed using GitHub Actions.</p>
+</body>
+</html>
+2. Create GitHub Actions Workflow
+
+File: .github/workflows/deploy.yml
+
+name: Deploy Static Website
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Upload Static Files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+Enable GitHub Pages
+
+Go to your repository:
+Settings → Pages
+
+Under Build and deployment:
+Source → select GitHub Actions
+
+Push the project
+git init
+git add .
+git commit -m "Add CI/CD workflow"
+git branch -M main
+git remote add origin <your-repo-url>
+git push -u origin main
